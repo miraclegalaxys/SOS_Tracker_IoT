@@ -107,10 +107,10 @@ void onLongitudeChange() {
 void onLEDMapChange()  {
   if (LED_map) {
     digitalWrite(ledPin, HIGH);  // ถ้า LED_map และ led_button ทั้งคู่เป็น true ให้ติด LED
-    Serial.println("SOS was not received");
+    Serial.println("SOS has already received");
   } else {
     digitalWrite(ledPin, LOW);  // ถ้าไม่ใช่ ให้ปิด LED
-    Serial.println("SOS has already received");
+    Serial.println("SOS was not received");
   }
 }
 
