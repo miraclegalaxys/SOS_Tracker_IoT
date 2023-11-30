@@ -1,5 +1,4 @@
-#include "arduino_secrets.h"
-//เรียกใช้ไฟล์ arduino_secrets.h
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
 #include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
 #include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
 #include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
