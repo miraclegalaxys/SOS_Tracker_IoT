@@ -1,8 +1,8 @@
-#include "arduino_secrets.h"
-#include <TinyGPS++.h>
-#include "thingProperties.h"
-#include <ArduinoIoTCloud.h>
-#include <SoftwareSerial.h>
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
+#include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
+#include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
+#include <SoftwareSerial.h> //เรียกใช้ไลบรารีสำหรับการจัดการสร้างพอร์ต Serial เสมือน (RX TX)
 
 //-----------------------------------------------------------------
 
@@ -38,7 +38,7 @@ void loop() {
  bool currentButtonState = digitalRead(buttonPin);
 
   if (currentButtonState == LOW && lastButtonState == HIGH) {
-    Serial.println("Button pressed, LED_map and led_button set to true");
+    Serial.println("SOS Button pressed!!");
     led_button = 1;
     while(true) {
       smartdelay_gps(1000);
@@ -84,7 +84,7 @@ static void smartdelay_gps(unsigned long ms)
 void onMaptrackChange()  {
   // Handle the location change. You might want to send data, log it, etc.
   // Assuming that the CloudLocation class has getLatitude() and getLongitude() methods
-  Serial.println("Maptrack changed");
+  Serial.println("SOS Maptrack Is Ready");
 }
 
 //-----------------------------------------------------------------
@@ -106,10 +106,10 @@ void onLongitudeChange() {
 void onLEDMapChange()  {
   if (LED_map) {
     digitalWrite(ledPin, HIGH);  // ถ้า LED_map และ led_button ทั้งคู่เป็น true ให้ติด LED
-    Serial.println("LED turned ON");
+    Serial.println("SOS LED turned ON");
   } else {
     digitalWrite(ledPin, LOW);  // ถ้าไม่ใช่ ให้ปิด LED
-    Serial.println("LED turned OFF");
+    Serial.println("SOS LED turned OFF");
   }
 }
 

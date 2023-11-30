@@ -1,26 +1,25 @@
-#include "arduino_secrets.h"
-#include <TridentTD_LineNotify.h>
-#include "thingProperties.h"
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include <TridentTD_LineNotify.h> //เรียกใช้ไลบรารีการแจ้งเตือนผ่านไลน์
+#include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
+#include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
+#include <Wire.h> //เรียกใช้สำหรับการสื่อสารผ่านโพรโทคอล I2C
+#include <LiquidCrystal_I2C.h> //เรียกใช้ไลบรารีสำหรับสื่อสารกับจอแสดงผล LCD ที่ใช้โพรโทคอล I2C
 
 //-----------------------------------------------------------------
 
 #define LINE_TOKEN "vgV21EKTQpNudqkPjXJrmdEnPc8V07dSkTcrOv6v7lq"
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 const int ledPin = 25;
-unsigned long previousMillis = 0;  // จะเก็บเวลาที่ล่าสุดที่ข้อความถูกส่ง
-const long interval = 5000;        // ช่วงเวลาสำหรับส่งข้อความ (5 วินาที)
+unsigned long previousMillis = 0;  // เก็บเวลาที่ล่าสุดที่ข้อความถูกส่ง
+const long interval = 5000;        // กำหนดช่วงเวลาสำหรับส่งข้อความ (5 วินาที)
 
 //-----------------------------------------------------------------
 
 void setup() {
-  // Initialize serial and wait for port to open:
   Serial.begin(9600);
   LINE.setToken(LINE_TOKEN);
   lcd.init();                      
   lcd.backlight();
-  // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
   delay(1500); 
 
   // Defined in thingProperties.h
