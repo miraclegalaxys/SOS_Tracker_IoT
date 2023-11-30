@@ -1,4 +1,5 @@
-#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include "arduino_secrets.h"
+//เรียกใช้ไฟล์ arduino_secrets.h
 #include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
 #include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
 #include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
@@ -106,10 +107,10 @@ void onLongitudeChange() {
 void onLEDMapChange()  {
   if (LED_map) {
     digitalWrite(ledPin, HIGH);  // ถ้า LED_map และ led_button ทั้งคู่เป็น true ให้ติด LED
-    Serial.println("SOS LED turned ON");
+    Serial.println("SOS was not received");
   } else {
     digitalWrite(ledPin, LOW);  // ถ้าไม่ใช่ ให้ปิด LED
-    Serial.println("SOS LED turned OFF");
+    Serial.println("SOS has already received");
   }
 }
 
