@@ -1,5 +1,4 @@
-#include "arduino_secrets.h"
-//เรียกใช้ไฟล์ arduino_secrets.h
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
 #include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
 #include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
 #include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
@@ -29,6 +28,7 @@ void setup() {
   ArduinoCloud.printDebugInfo();
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
+  
 
 }
 
@@ -110,7 +110,7 @@ void onLEDMapChange()  {
     Serial.println("SOS has already received");
   } else {
     digitalWrite(ledPin, LOW);  // ถ้าไม่ใช่ ให้ปิด LED
-    Serial.println("SOS was not received");
+    Serial.println("SOS has not received");
   }
 }
 
