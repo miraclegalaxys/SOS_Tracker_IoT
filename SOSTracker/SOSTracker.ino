@@ -4,10 +4,12 @@
 #include "thingProperties.h" 
 #include <ArduinoIoTCloud.h> 
 #include <SoftwareSerial.h> 
+#include <TridentTD_LineNotify.h> 
 
 //-----------------------------------------------------------------
 
 TinyGPSPlus gps;  
+#define LINE_TOKEN "vgV21EKTQpNudqkPjXJrmdEnPc8V07dSkTcrOv6v7lq"
 const int buttonPin = 27;  
 const int ledPin = 25;  
 bool lastButtonState = LOW;  
@@ -22,6 +24,7 @@ SoftwareSerial neo6m(gpsTxPin, gpsRxPin);
 void setup() {
   Serial.begin(9600);  
   neo6m.begin(9600);  
+  LINE.setToken(LINE_TOKEN);
   delay(1500);  
   initProperties();  
   ArduinoCloud.begin(ArduinoIoTPreferredConnection);  
@@ -104,10 +107,9 @@ void onLongitudeChange() {
 void onLEDMapChange()  {
   if (LED_map) {
     digitalWrite(ledPin, HIGH);  
-    Serial.println("SOS has already received"); 
+    LINE.notify("Sent Success"); 
   } else {
     digitalWrite(ledPin, LOW);  
-    Serial.println("SOS has not received");  
   }
 }
 
