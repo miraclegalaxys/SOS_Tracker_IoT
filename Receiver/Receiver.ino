@@ -69,12 +69,6 @@ void linenotify() {  // ฟังก์ชัน linenotify
         previousMillis = currentMillis;  // อัปเดตค่า previousMillis เป็นค่า currentMillis
 
         LINE.notify("Help Me!!");  // ส่งข้อความ "Help Me!!" ผ่าน LINE Notify
-
-        tone(buzzerPin, 1000);  // ส่งสัญญาณเสียงผ่าน Buzzer ที่ pin ที่กำหนด (buzzerPin) ที่ความถี่ 1000 Hz
-        delay(250);  // รอเวลา 250 milliseconds
-
-        noTone(buzzerPin);  // ปิดเสียง Buzzer ที่ pin ที่กำหนด
-        delay(250);  // รอเวลา 250 milliseconds
     }
 }
 
