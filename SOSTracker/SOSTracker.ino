@@ -1,3 +1,4 @@
+
 #include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
 #include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
 #include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
@@ -61,7 +62,7 @@ void loop() {
     }
   }
 
-  lastButtonState = currentButtonState; // อัปเดตสถานะล่าสุดของปุ่ม
+  lastButtonState = currentButtonState; 
 
 
 
@@ -83,22 +84,20 @@ static void smartdelay_gps(unsigned long ms)
 //-----------------------------------------------------------------
 
 void onMaptrackChange()  {
-  // Handle the location change. You might want to send data, log it, etc.
-  // Assuming that the CloudLocation class has getLatitude() and getLongitude() methods
   Serial.println("SOS Maptrack Is Ready");
 }
 
 //-----------------------------------------------------------------
 
 void onLatitudeChange() {
-  // โค้ดสำหรับการจัดการเมื่อมีการเปลี่ยนแปลงค่า latitude
+
 
 }
 
 //-----------------------------------------------------------------
 
 void onLongitudeChange() {
-  // โค้ดสำหรับการจัดการเมื่อมีการเปลี่ยนแปลงค่า longitude
+
 
 }
 
@@ -106,10 +105,10 @@ void onLongitudeChange() {
 
 void onLEDMapChange()  {
   if (LED_map) {
-    digitalWrite(ledPin, HIGH);  // ถ้า LED_map และ led_button ทั้งคู่เป็น true ให้ติด LED
+    digitalWrite(ledPin, HIGH);  
     Serial.println("SOS has already received");
   } else {
-    digitalWrite(ledPin, LOW);  // ถ้าไม่ใช่ ให้ปิด LED
+    digitalWrite(ledPin, LOW);  
     Serial.println("SOS has not received");
   }
 }
@@ -117,7 +116,7 @@ void onLEDMapChange()  {
 //-----------------------------------------------------------------
 
 void onLedButtonChange()  {
-  // Add your code here to act upon LedButton change
+
 }
 
 //-----------------------------------------------------------------
