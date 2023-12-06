@@ -1,37 +1,37 @@
 
-#include "arduino_secrets.h" 
-#include <TinyGPS++.h> 
-#include "thingProperties.h" 
-#include <ArduinoIoTCloud.h> 
-#include <SoftwareSerial.h> 
-#include <TridentTD_LineNotify.h> 
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include <TinyGPS++.h> //เรียกใช้ไลบรารีสำหรับการจัดการข้อมูล GPS
+#include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
+#include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIOTCloud
+#include <SoftwareSerial.h> //เรียกใช้ไลบรารีสำหรับการจัดการสร้างพอร์ต Serial เสมือน (RX TX)
+#include <TridentTD_LineNotify.h> //เรียกใช้ไลบรารีการแจ้งเตือนผ่านไลน์
 
 //-----------------------------------------------------------------
 
-TinyGPSPlus gps;  
+TinyGPSPlus gps;  // สร้างอ็อบเจกต์ TinyGPSPlus สำหรับใช้ในการจัดการข้อมูล GPS
 #define LINE_TOKEN "vgV21EKTQpNudqkPjXJrmdEnPc8V07dSkTcrOv6v7lq"
-const int buttonPin = 27;  
-const int ledPin = 25;  
-bool lastButtonState = LOW;  
-double Lat;  
-double Long;  
-#define gpsRxPin 16  
-#define gpsTxPin 17  
-SoftwareSerial neo6m(gpsTxPin, gpsRxPin); 
+const int buttonPin = 27;  // กำหนดหมายเลขขาของปุ่ม SOS
+const int ledPin = 25;  // กำหนดหมายเลขขาของ LED
+bool lastButtonState = LOW;  // เก็บสถานะปุ่มของรอบที่แล้ว
+double Lat;  // ตัวแปรเก็บค่าละติจูด
+double Long;  // ตัวแปรเก็บค่าลองจิจูด
+#define gpsRxPin 16  // กำหนดหมายเลขขาของ RX สำหรับการติดต่อกับโมดูล GPS
+#define gpsTxPin 17  // กำหนดหมายเลขขาของ TX สำหรับการติดต่อกับโมดูล GPS
+SoftwareSerial neo6m(gpsTxPin, gpsRxPin);  // สร้างอ็อบเจกต์ SoftwareSerial สำหรับการติดต่อกับโมดูล GPS
 
 //-----------------------------------------------------------------
 
 void setup() {
-  Serial.begin(9600);  
-  neo6m.begin(9600);  
-  LINE.setToken(LINE_TOKEN);
-  delay(1500);  
-  initProperties();  
-  ArduinoCloud.begin(ArduinoIoTPreferredConnection);  
-  setDebugMessageLevel(2);  
-  ArduinoCloud.printDebugInfo();  
-  pinMode(buttonPin, INPUT_PULLUP);  
-  pinMode(ledPin, OUTPUT);  
+  Serial.begin(9600);  // เริ่มการใช้งาน Serial ที่ความเร็ว 9600 bps
+  LINE.setToken(LINE_TOKEN); ////กำหนดโทเค็นที่ใช้สำหรับ LINE Notify = LINE_TOKEN
+  neo6m.begin(9600);  // เริ่มการใช้งาน SoftwareSerial ที่ความเร็ว 9600 bps
+  delay(1500);  // รอ 1500 milliseconds 1.5 วินาที
+  initProperties();  // เรียกใช้ฟังก์ชัน initProperties ที่ไว้สำหรับกำหนดค่าเริ่มต้น properties
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);  // เริ่มการเชื่อมต่อกับ Arduino IoT Cloud
+  setDebugMessageLevel(2);  // ตั้งระดับการแสดงข้อมูล debug
+  ArduinoCloud.printDebugInfo();  // แสดงข้อมูล debug ของ Arduino IoT Cloud
+  pinMode(buttonPin, INPUT_PULLUP);  // กำหนดปุ่ม SOS เป็น INPUT แบบ Pull-up
+  pinMode(ledPin, OUTPUT);  // กำหนด LED เป็น OUTPUT
 }
 
 //-----------------------------------------------------------------
@@ -39,34 +39,38 @@ void setup() {
 void loop() 
 {
 
-  bool currentButtonState = digitalRead(buttonPin);  
+  bool currentButtonState = digitalRead(buttonPin);  // อ่านสถานะปุ่มปัจจุบัน
 
-  if (currentButtonState == LOW && lastButtonState == HIGH) {  
-    Serial.println("SOS Button pressed!!");  
-    led_button = 1;  
-    while(true) {  
-      smartdelay_gps(1000);  
-      if (gps.location.isValid()) {  
-        Serial.println("New SOS tracking location: ");  
-        latitude = String(gps.location.lat(), 6);  
-        longitude = String(gps.location.lng(), 6);  
-        Lat = latitude.toDouble();  
-        Long = longitude.toDouble();  
-        maptrack = {Lat, Long}; 
-        ArduinoCloud.update();  
+  if (currentButtonState == LOW && lastButtonState == HIGH) {  // ตรวจสอบว่าปุ่มถูกกดหรือไม่
+    Serial.println("SOS Button pressed!!");  // แสดงข้อความบน Serial Monitor
+    led_button = 1;  // กำหนดค่า led_button เป็น 1
+    while(true) {  // ทำลูปไปเรื่อยๆ
+      smartdelay_gps(1000);  // อัพเดตข้อมูล GPS ทุก 1000 milliseconds 1 วินาที
+      if (gps.location.isValid()) {  // ตรวจสอบว่าข้อมูล GPS ถูกต้องหรือไม่
+        Serial.println("New SOS tracking location: ");  // แสดงข้อความบน Serial Monitor
+        latitude = String(gps.location.lat(), 6);  // ดึงข้อมูลละติจูด
+        longitude = String(gps.location.lng(), 6);  // ดึงข้อมูลลองจิจูด
+        Lat = latitude.toDouble();  // แปลงข้อมูลละติจูดเป็น double
+        Long = longitude.toDouble();  // แปลงข้อมูลลองจิจูดเป็น double
+        maptrack = {Lat, Long};  // กำหนดค่า maptrack
+        ArduinoCloud.update();  // อัพเดตข้อมูลไปยัง Arduino IoT Cloud
+        // พิมพ์ค่าละติจูดพร้อมทศนิยม 6 ตำแหน่ง
         Serial.print("Lat: ");
-        Serial.print(latitude + " , ");
-        Serial.println(Lat, 6);
+        Serial.print(latitude);  // พิมพ์ค่าตัวแปร latitude
+        Serial.println(Lat, 6);  // พิมพ์ค่าตัวแปร Lat พร้อมทศนิยม 6 ตำแหน่ง
+
+        // พิมพ์ค่าลองจิจูดพร้อมทศนิยม 6 ตำแหน่ง
         Serial.print("Long: ");
-        Serial.print(longitude + " , ");
-        Serial.println(Long, 6);
+        Serial.print(longitude); // พิมพ์ค่าตัวแปร longitude
+        Serial.println(Long, 6); // พิมพ์ค่าตัวแปร Long พร้อมทศนิยม 6 ตำแหน่ง
+
       }
     }
   }
 
-  lastButtonState = currentButtonState;  
+  lastButtonState = currentButtonState;  // อัพเดตสถานะปุ่มของรอบที่แล้ว
 
-  ArduinoCloud.update();  
+  ArduinoCloud.update();  // อัพเดตข้อมูลไปยัง Arduino IoT Cloud
 }
 
 
@@ -74,18 +78,18 @@ void loop()
 
 static void smartdelay_gps(unsigned long ms)
 {
-  unsigned long start = millis();  
+  unsigned long start = millis();  // เวลาปัจจุบัน
   do 
   {
-    while (neo6m.available())  
-      gps.encode(neo6m.read());  
-  } while (millis() - start < ms);  
+    while (neo6m.available())  // วนลูปตรวจสอบข้อมูลที่มีอยู่ใน SoftwareSerial
+      gps.encode(neo6m.read());  // ถอดรหัสข้อมูล GPS และนำเข้าใน TinyGPSPlus
+  } while (millis() - start < ms);  // ทำวงวนไปเรื่อยๆ จนกว่าเวลาที่ผ่านมาจะมีค่ามากกว่าหรือเท่ากับ ms
 }
 
 //-----------------------------------------------------------------
 
 void onMaptrackChange()  {
-  Serial.println("SOS Maptrack Is Ready");  
+  Serial.println("SOS Maptrack Is Ready");  // แสดงข้อความบน Serial Monitor
 }
 
 //-----------------------------------------------------------------
@@ -106,10 +110,10 @@ void onLongitudeChange() {
 
 void onLEDMapChange()  {
   if (LED_map) {
-    digitalWrite(ledPin, HIGH);  
-    LINE.notify("Sent Success"); 
+    digitalWrite(ledPin, HIGH);  // ถ้า LED_map เป็นจริง ให้เปิด LED
+    LINE.notify("Sent Success");  // แสดงข้อความบน Line
   } else {
-    digitalWrite(ledPin, LOW);  
+    digitalWrite(ledPin, LOW);  // ถ้า LED_map เป็นเท็จ ให้ปิด LED  
   }
 }
 

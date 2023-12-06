@@ -1,123 +1,124 @@
-
-#include "arduino_secrets.h" 
-#include <TridentTD_LineNotify.h> 
-#include "thingProperties.h" 
-#include <ArduinoIoTCloud.h> 
-#include <U8g2lib.h> 
+#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include <TridentTD_LineNotify.h> //เรียกใช้ไลบรารีการแจ้งเตือนผ่านไลน์
+#include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
+#include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIoTCloud
+#include <U8g2lib.h> //เรียกใช้จอคำสั่งจอแสดงผล
 
 //-----------------------------------------------------------------
 
-#define LINE_TOKEN "vgV21EKTQpNudqkPjXJrmdEnPc8V07dSkTcrOv6v7lq" 
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE); 
-const int ledPin = 25; 
-unsigned long previousMillis = 0; 
-const long interval = 5000; 
-const int buzzerPin = 26; 
-unsigned long currentMillis; 
+#define LINE_TOKEN "vgV21EKTQpNudqkPjXJrmdEnPc8V07dSkTcrOv6v7lq" //กำหนดโทเค็นสำหรับ LINE Notify.
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE); //สร้างอ็อบเจ็คต์ u8g2 สำหรับการควบคุมหน้าจอ OLED รุ่น SH1106 ขนาด 128x64 ผ่าน I2C
+const int ledPin = 25; //กำหนดพินของ LED
+unsigned long previousMillis = 0; // กำหนดตัวแปรเพื่อจัดเก็บเวลาล่าสุดที่เหตุการณ์เกิดขึ้น.
+const long interval = 5000; //กำหนดช่วงเวลาที่ต้องรอ 5000 (มิลลิวินาที) = 5 วินาที
+const int buzzerPin = 26; //กำหนดพินของบัสเซอร์
+unsigned long currentMillis; //ประกาศตัวแปรสำหรับจัดเก็บเวลาปัจจุบัน
 
 //-----------------------------------------------------------------
 
 void setup() {
-  Serial.begin(9600); 
-  u8g2.begin(); 
-  LINE.setToken(LINE_TOKEN); 
-  delay(1500); 
-  pinMode(buzzerPin, OUTPUT); 
+  Serial.begin(9600); //เริ่มต้นการสื่อสารผ่านพอร์ต Serial ด้วยอัตรา 9600
+  u8g2.begin(); //กำหนดการเริ่มต้นหน้าจอ OLED.
+  LINE.setToken(LINE_TOKEN); //กำหนดโทเค็นที่ใช้สำหรับ LINE Notify = LINE_TOKEN
+  delay(1500); //รอ 1.5 วินาที
+  pinMode(buzzerPin, OUTPUT); //ตั้งค่าพินของบัสเซอร์เพื่อใช้งานเป็น OUTPUT.
 
   
   initProperties();
 
  
-  ArduinoCloud.begin(ArduinoIoTPreferredConnection); 
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection); //เริ่มต้นการเชื่อมต่อกับ Arduino IoT Cloud
   
-  setDebugMessageLevel(2); 
-  ArduinoCloud.printDebugInfo(); 
-  pinMode(ledPin, OUTPUT); 
+  setDebugMessageLevel(2); //ตั้งค่าระดับของข้อความดีบัก
+  ArduinoCloud.printDebugInfo(); //พิมพ์ข้อมูลดีบัก
+  pinMode(ledPin, OUTPUT); //ตั้งค่าพินของ LED เพื่อใช้งานเป็น OUTPUT
 }
 
 //-----------------------------------------------------------------
 
 void loop() {
 
-  ArduinoCloud.update(); 
-  currentMillis = millis(); 
+  ArduinoCloud.update(); // อัปเดตสถานะการเชื่อมต่อกับ Arduino IoT Cloud
+  currentMillis = millis(); // นับเวลาปัจจุบัน (ใน milliseconds) และเก็บค่าไว้ในตัวแปร currentMillis
 
-  if (!led_sos) { 
-    linenotify(); 
-    buzzer(); 
+  if (!led_sos) { //ตรวจสอบว่า led_sos เป็นเท็จหรือไม่
+    linenotify(); //เรียกใช้ฟังก์ชัน linenotify
+    buzzer(); //เรียกใช้ฟังก์ชัน buzzer
   }
 
 }
 
 //-----------------------------------------------------------------
 
-void buzzer() {  
-    if (LED_re) {  
-        tone(buzzerPin, 1000);  
-        delay(250);  
+void buzzer() {  // ฟังก์ชัน buzzer
+    if (LED_re) {  // ตรวจสอบว่า LED_re เป็นจริงหรือไม่
+        tone(buzzerPin, 1000);  // ส่งสัญญาณเสียงผ่าน Buzzer ที่ pin ที่กำหนด (buzzerPin) ที่ความถี่ 1000 Hz
+        delay(250);  // รอเวลา 250 milliseconds
 
-        noTone(buzzerPin);  
-        delay(250); 
+        noTone(buzzerPin);  // ปิดเสียง Buzzer ที่ pin ที่กำหนด
+        delay(250);  // รอเวลา 250 milliseconds
     }
 }
 
 //-----------------------------------------------------------------
 
-void linenotify() {  
+void linenotify() {  // ฟังก์ชัน linenotify
     if (LED_re && (currentMillis - previousMillis >= interval)) 
-    {  
-        previousMillis = currentMillis;  
+    {  // ตรวจสอบว่า LED_re เป็นจริง และผ่านเงื่อนไขเวลา
+        previousMillis = currentMillis;  // อัปเดตค่า previousMillis เป็นค่า currentMillis
 
-        LINE.notify("Help Me!!");  
+        LINE.notify("Help Me!!");  // ส่งข้อความ "Help Me!!" ผ่าน LINE Notify
     }
 }
 
+
 //-----------------------------------------------------------------
 
-void onLEDReChange()  {  
-    digitalWrite(ledPin, LED_re ? HIGH : LOW);  
+void onLEDReChange()  {  // ฟังก์ชัน onLEDReChange
+    digitalWrite(ledPin, LED_re ? HIGH : LOW);  // เปลี่ยนสถานะของ LED ตามค่า LED_re
 }
 
 //-----------------------------------------------------------------
 
 void onLedButtonChange()  
-{  
+{  // ฟังก์ชัน onLedButtonChange
     if (led_button == 1) 
-    {  
-        activateSOSMode();  
+    {  // ตรวจสอบค่าของ led_button
+        activateSOSMode();  // เรียกใช้ฟังก์ชัน activateSOSMode
     } 
     else 
     {
-        deactivateSOSMode();  
+        deactivateSOSMode();  // เรียกใช้ฟังก์ชัน deactivateSOSMode
     }
 }
 
 //-----------------------------------------------------------------
 
 void activateSOSMode() 
-{  
-    digitalWrite(ledPin, HIGH);  
-    LED_re = true;  
-    displaySOSMessage();  
+{  // ฟังก์ชัน activateSOSMode
+    digitalWrite(ledPin, HIGH);  // เปิด LED ที่ pin ที่กำหนด
+    LED_re = true;  // ตั้งค่า LED_re เป็นจริง
+    displaySOSMessage();  // เรียกใช้ฟังก์ชัน displaySOSMessage
 }
 
 //-----------------------------------------------------------------
 
 void deactivateSOSMode() 
-{  
-    digitalWrite(ledPin, LOW);  
-    LED_re = false;  
+{  // ฟังก์ชัน deactivateSOSMode
+    digitalWrite(ledPin, LOW);  // ปิด LED ที่ pin ที่กำหนด
+    LED_re = false;  // ตั้งค่า LED_re เป็นเท็จ
 }
+
 
 //-----------------------------------------------------------------
 
 void displaySOSMessage() 
-{  
-    u8g2.clearBuffer();  
-    u8g2.setFont(u8g2_font_profont22_tr);  
-    u8g2.drawStr(50, 20, "SOS");  
-    u8g2.drawStr(40, 40, "ALERT"); 
-    u8g2.sendBuffer(); 
+{  // ฟังก์ชัน displaySOSMessage
+    u8g2.clearBuffer();  // ลบข้อมูลบัฟเฟอร์ของหน้าจอ
+    u8g2.setFont(u8g2_font_profont22_tr);  // เลือก font ขนาด 22
+    u8g2.drawStr(50, 20, "SOS");  // สร้างข้อความ "SOS" ที่ตำแหน่ง (50, 20)
+    u8g2.drawStr(40, 40, "ALERT");  // สร้างข้อความ "ALERT" ที่ตำแหน่ง (40, 40)
+    u8g2.sendBuffer();  // ส่งข้อมูลบัฟเฟอร์ไปยังหน้าจอ
 }
 
 
