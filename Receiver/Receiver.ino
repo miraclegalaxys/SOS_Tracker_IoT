@@ -1,9 +1,11 @@
-#include "arduino_secrets.h" //เรียกใช้ไฟล์ arduino_secrets.h
+#include "arduino_secrets.h"
+//เรียกใช้ไฟล์ arduino_secrets.h
 #include <TridentTD_LineNotify.h> //เรียกใช้ไลบรารีการแจ้งเตือนผ่านไลน์
 #include "thingProperties.h" //เรียกใช้ไฟล์ thingProperties.h
 #include <ArduinoIoTCloud.h> //เรียกใช้ Cloud ArduinoIoTCloud
 //#include <U8g2lib.h> //เรียกใช้จอคำสั่งจอแสดงผล
-#include <Wire.h> //
+#include <Wire.h> //ที่ใช้ในการสื่อสารผ่านโปรโตคอล I2C หรือ TWI (Two-Wire Interface) SDA SCL
+//SDA สำหรับการส่งข้อมูลไปและกลับระหว่างอุปกรณ์ SCL ส่งสัญญาณนาฬิกาเพื่อกำหนดจังหวะของการส่งข้อมูลในโปรโตคอล I2C
 #include <LiquidCrystal_I2C.h>  //เรียกใช้จอคำสั่งจอแสดงผล
 
 //-----------------------------------------------------------------
